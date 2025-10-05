@@ -24,13 +24,6 @@ jobs:
         source venv/bin/activate
         pip install --upgrade pip
         pip install -r requirements.txt
-    
-    - name: Test WooCommerce endpoint connectivity
-      run: |
-        echo "=== WP REST root ==="
-        curl -v --max-time 15 "${{ secrets.WC_BASE }}/wp-json/" || true
-        echo "=== WC products endpoint ==="
-        curl -v --max-time 15 "${{ secrets.WC_BASE }}/wp-json/wc/v3/products?per_page=1" || true
 
     - name: Run SerpApi WooCommerce Sync
       env:
@@ -39,7 +32,7 @@ jobs:
         WC_KEY: ${{ secrets.WC_KEY }}
         WC_SECRET: ${{ secrets.WC_SECRET }}
         MAX_ITEMS: 5
-        QUERY: "Coffee"
+        QUERY: "Best-Sellers"
         MAX_PRODUCT_PAGES: 3
         WC_PER_PAGE: 100
       run: |
