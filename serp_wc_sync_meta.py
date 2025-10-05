@@ -13,7 +13,8 @@ MAX_PRODUCT_PAGES = int(os.environ.get("MAX_PRODUCT_PAGES", 3))
 WC_PER_PAGE = int(os.environ.get("WC_PER_PAGE", 100))
 
 def get_serpapi_products(query, max_items=5):
-    url = f"https://serpapi.com/search.json?q={query}&engine=amazon&api_key={SERPAPI_KEY}"
+    amazon_domain = "amazon.com"  # يمكن تغييره حسب الموقع
+    url = f"https://serpapi.com/search.json?engine=amazon&k={query}&amazon_domain={amazon_domain}&api_key={SERPAPI_KEY}"
     response = requests.get(url)
     data = response.json()
     products = data.get("shopping_results", [])
