@@ -1,0 +1,42 @@
+name: SerpApi Woo Sync
+
+# تحديد متى يتم تشغيل السكربت
+on:
+  schedule:
+    # مثال: كل يوم الساعة 03:00 UTC
+    - cron: "0 3 * * *"
+  workflow_dispatch: # لتشغيل يدوي من GitHub UI
+
+jobs:
+  run-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run SerpApi WooCommerce Sync
+      env:
+        SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        WC_BASE: ${{ secrets.WC_BASE }}
+        WC_KEY: ${{ secrets.WC_KEY }}
+        WC_SECRET: ${{ secrets.WC_SECRET }}
+        MAX_ITEMS: 5
+        QUERY: "best sellers"
+        MAX_PRODUCT_PAGES: 3
+        WC_PER_PAGE: 100
+      run: |
+        source venv/bin/activate
+        python serp_wc_sync_meta.py
