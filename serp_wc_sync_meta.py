@@ -8,13 +8,13 @@ WC_BASE = os.environ.get("WC_BASE").rstrip('/')
 WC_KEY = os.environ.get("WC_KEY")
 WC_SECRET = os.environ.get("WC_SECRET")
 MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 5))
-QUERY = os.environ.get("QUERY", "Coffee")
+QUERY = os.environ.get("QUERY", "Best-Sellers")
 MAX_PRODUCT_PAGES = int(os.environ.get("MAX_PRODUCT_PAGES", 3))
 WC_PER_PAGE = int(os.environ.get("WC_PER_PAGE", 100))
 
 def get_serpapi_products(query, max_items=5):
     amazon_domain = "amazon.com"  # يمكن تغييره حسب الموقع
-    url = f"https://serpapi.com/search.json?engine=google_shopping&q=Iphone&location=Austin,+Texas,+United+States&google_domain=google.com&hl=en&gl=us&api_key={SERPAPI_KEY}"
+    url = f"https://serpapi.com/search.json?engine=amazon&k={query}&amazon_domain={amazon_domain}&api_key={SERPAPI_KEY}"
     response = requests.get(url)
     data = response.json()
     products = data.get("shopping_results", [])
