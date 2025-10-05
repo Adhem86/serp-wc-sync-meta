@@ -8,7 +8,7 @@ WC_BASE = os.environ.get("WC_BASE").rstrip('/')
 WC_KEY = os.environ.get("WC_KEY")
 WC_SECRET = os.environ.get("WC_SECRET")
 MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 5))
-QUERY = os.environ.get("QUERY", "best sellers")
+QUERY = os.environ.get("QUERY", "Coffee")
 MAX_PRODUCT_PAGES = int(os.environ.get("MAX_PRODUCT_PAGES", 3))
 WC_PER_PAGE = int(os.environ.get("WC_PER_PAGE", 100))
 
