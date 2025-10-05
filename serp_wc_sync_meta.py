@@ -67,7 +67,6 @@ def create_or_update_wc_product(product):
     sleep(1)  # لتجنب الحظر أو مشاكل Rate Limit
 
 def main():
-    def main():
     products = get_serpapi_products(QUERY, MAX_ITEMS)
     print(f"Found {len(products)} products from SerpApi.")
     for p in products:
