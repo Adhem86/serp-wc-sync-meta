@@ -32,7 +32,7 @@ jobs:
         WC_KEY: ${{ secrets.WC_KEY }}
         WC_SECRET: ${{ secrets.WC_SECRET }}
         MAX_ITEMS: 5
-        QUERY: "best sellers"
+        QUERY: "Coffee"
         MAX_PRODUCT_PAGES: 3
         WC_PER_PAGE: 100
       run: |
