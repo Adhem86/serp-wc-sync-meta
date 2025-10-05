@@ -1,11 +1,9 @@
 name: SerpApi Woo Sync
 
-# تحديد متى يتم تشغيل السكربت
 on:
   schedule:
-    # مثال: كل يوم الساعة 03:00 UTC
-    - cron: "0 3 * * *"
-  workflow_dispatch: # لتشغيل يدوي من GitHub UI
+    - cron: "0 3 * * *"   # كل يوم الساعة 03:00 UTC
+  workflow_dispatch:     # لتشغيل يدوي
 
 jobs:
   run-sync:
