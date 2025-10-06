@@ -11,6 +11,7 @@ MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 5))
 QUERY = os.environ.get("QUERY", "Best-Sellers")
 MAX_PRODUCT_PAGES = int(os.environ.get("MAX_PRODUCT_PAGES", 3))
 WC_PER_PAGE = int(os.environ.get("WC_PER_PAGE", 100))
+WC_TIMEOUT = 15
 
 def get_serpapi_products(query, max_items=5):
     amazon_domain = "amazon.com"  # يمكن تغييره حسب الموقع
@@ -44,28 +45,42 @@ def find_wc_product_by_source_id(source_id):
         page += 1
     return None
 
-def create_or_update_wc_product(product):
-    source_id = product.get("id")
-    existing = find_wc_product_by_source_id(source_id)
-    payload = {
-        "name": product.get("title"),
-        "type": "external",
-        "regular_price": str(product.get("price", "0")),
-        "external_url": product.get("link"),
-        "meta_data": [
-            {"key": "source_id", "value": source_id},
-            {"key": "source", "value": "amazon"}
-        ]
-    }
-    if existing:
-        url = f"{WC_BASE}/wp-json/wc/v3/products/{existing['id']}"
-        r = requests.put(url, auth=(WC_KEY, WC_SECRET), headers=wc_headers(), data=json.dumps(payload))
-        print(f"Updated: {payload['name']} ({r.status_code})")
-    else:
-        url = f"{WC_BASE}/wp-json/wc/v3/products"
-        r = requests.post(url, auth=(WC_KEY, WC_SECRET), headers=wc_headers(), data=json.dumps(payload))
-        print(f"Created: {payload['name']} ({r.status_code})")
-    sleep(1)  # لتجنب الحظر أو مشاكل Rate Limit
+def debug_print_response(r):
+    try:
+        body = r.json()
+    except Exception:
+        body = r.text
+    print(">>> WC RESPONSE STATUS:", getattr(r, "status_code", "NO_STATUS"))
+    print(">>> WC RESPONSE BODY SNIPPET:", json.dumps(body)[:2000])
+
+def create_product(payload):
+    url = f"{WC_BASE}/wp-json/wc/v3/products"
+    headers = {"Content-Type": "application/json"}
+    # Use consumer_key & consumer_secret as query params (fallback or default)
+    params = {"consumer_key": WC_KEY, "consumer_secret": WC_SECRET}
+    try:
+        r = requests.post(url, params=params, headers=headers, json=payload, timeout=WC_TIMEOUT)
+        debug_print_response(r)
+        if r.status_code in (200,201):
+            return {"ok": True, "status": r.status_code, "body": r.json()}
+        return {"ok": False, "status": r.status_code, "body": r.text}
+    except Exception as e:
+        print("[error] create_product failed:", e)
+        return {"ok": False, "status": "exception", "body": str(e)}
+
+def update_product(product_id, payload):
+    url = f"{WC_BASE}/wp-json/wc/v3/products/{product_id}"
+    headers = {"Content-Type": "application/json"}
+    params = {"consumer_key": WC_KEY, "consumer_secret": WC_SECRET}
+    try:
+        r = requests.put(url, params=params, headers=headers, json=payload, timeout=WC_TIMEOUT)
+        debug_print_response(r)
+        if r.status_code in (200,201):
+            return {"ok": True, "status": r.status_code, "body": r.json()}
+        return {"ok": False, "status": r.status_code, "body": r.text}
+    except Exception as e:
+        print("[error] update_product failed:", e)
+        return {"ok": False, "status": "exception", "body": str(e)}
 
 def main():
     products = get_serpapi_products(QUERY, MAX_ITEMS)
